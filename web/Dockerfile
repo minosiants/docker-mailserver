@@ -9,6 +9,7 @@ FROM roundcube/roundcubemail:${ROUNDCUBE_VER} AS roundcube
 FROM jeboehm/php-nginx-base:${PHP_VER}
 
 ARG ADMIN_VER=1.4
+ARG RCPLUGINS=""
 
 LABEL maintainer="jeff@ressourcenkonflikt.de"
 LABEL vendor="https://github.com/jeboehm/docker-mailserver"
@@ -25,7 +26,8 @@ ENV MYSQL_HOST=db \
     APP_ENV=prod \
     TRUSTED_PROXIES=172.16.0.0/12 \
     WAITSTART_TIMEOUT=1m \
-    ADMIN_VER=${ADMIN_VER}
+    ADMIN_VER=${ADMIN_VER} \
+    RCPLUGINS=${RCPLUGINS}
 
 COPY --from=roundcube /usr/src/roundcubemail/ /var/www/html/webmail/
 COPY --from=dockerize /usr/local/bin/dockerize /usr/local/bin
@@ -43,6 +45,9 @@ WORKDIR /var/www/html/webmail
 
 RUN cp /var/www/html/webmail/composer.json-dist /var/www/html/webmail/composer.json && \
     composer install --no-dev --prefer-dist && \
+    composer require --prefer-dist --ignore-platform-reqs -o --update-no-dev -n \
+        cor/keyboard_shortcuts \
+        ${RCPLUGINS} && \
     rm -rf /root/.composer
 
 RUN ln -s /opt/manager/public /var/www/html/manager && \

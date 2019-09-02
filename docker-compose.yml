@@ -54,7 +54,12 @@ services:
   # live here. Can be removed if not needed.
   web:
     image: jeboehm/mailserver-web:latest
-    build: ./web
+    build:
+      context: ./web
+      # Uncomment this to install Roundcube plugins when building
+      # the image.
+      # args:
+      #   RCPLUGINS: kitist/html5_notifier johndoh/contextmenu
     restart: on-failure:5
     env_file: .env
     volumes:

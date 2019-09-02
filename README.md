@@ -69,7 +69,8 @@ Services
 Installation (advanced setup)
 -----------------------------
 This paragraph describes different advanced configuration scenarios. It requires some knowledge
-about docker-compose.
+about docker-compose. Always have a look into the changes of `docker-compose.yml` when you update
+to a newer docker-mailserver version.
 
 ### Use your own TLS certificates
 1. Remove the `ssl` service from `docker-compose.yml`, by removing the entire block.
@@ -146,6 +147,23 @@ service definition in `docker-compose.yml`.
 1. Set the `RELAYHOST` variable in `.env` from false to the address of your relay, e.g. `RELAYHOST=[yourmta.example]:25`.
 2. Restart the environment.
 
+### Add plugins to Roundcube webmail
+1. Uncomment the build args section of the web service definition in `docker-compose.yml`:
+   ```
+    web:
+      image: jeboehm/mailserver-web:latest
+      build:
+      context: ./web
+      args:
+        RCPLUGINS: kitist/html5_notifier johndoh/contextmenu
+   ```
+2. Change the `RCPLUGINS` declaration and add the wanted packages. You can find them
+on [roundcube.net](https://plugins.roundcube.net/).
+3. If your plugin requires additional configuration, change the configuration
+file in `web/rootfs/var/www/webmail/config/config.inc.php`.
+4. Rebuild the image by running `bin/production.sh build web`.
+5. Recreate the container: `bin/production.sh up -d web`.
+
 Technical details
 =================
 Filters
@@ -175,7 +193,7 @@ An SPF record is a type of Domain Name Service (DNS) record that identifies whic
 email on behalf of your domain.
 
 docker-mailserver checks incoming mails for valid SPF records. See [this page](https://www.spfwizard.net/) for a guide
-for setting up your own domains for SPF.
+to set up your own domains for SPF.
 
 DKIM
 ----
