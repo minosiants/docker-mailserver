@@ -3,12 +3,12 @@ version: '3.5'
 services:
   # Creates self signed tls certificates. Remove if you
   # use your own.
-  ssl:
-    image: jeboehm/mailserver-ssl:latest
-    build: ./ssl
-    env_file: .env
-    volumes:
-      - data-tls:/media/tls:rw
+  #ssl:
+  #  image: jeboehm/mailserver-ssl:latest
+  #  build: ./ssl
+  #  env_file: .env
+  #  volumes:
+  #    - /Users/kaspar/stuff/docker-mailserver/data-tls:/media/tls:rw
 
   # Responsible for storing users and their aliases. Remove
   # if you already have a MySQL server.
@@ -28,7 +28,9 @@ services:
     restart: on-failure:5
     env_file: .env
     volumes:
-      - data-tls:/media/tls:ro
+      - /Users/kaspar/stuff/docker-mailserver/data-tls:/media/tls:ro
+        # - /Users/kaspar/stuff/docker-mailserver/logs:/var/log:ro  
+        #- /Users/kaspar/stuff/docker-mailserver/postfix:/etc/postfix
       # For using external certificates uncomment the following lines
       # and change the path on the left side of the colon.
       # - /home/user/certs/mail.example.com.crt:/media/tls/mailserver.crt:ro
@@ -44,7 +46,7 @@ services:
     env_file: .env
     volumes:
       - data-mail:/var/vmail
-      - data-tls:/media/tls:ro
+      - /Users/kaspar/stuff/docker-mailserver/data-tls:/media/tls:ro
       # For using external certificates uncomment the following lines
       # and change the path on the left side of the colon.
       # - /home/user/certs/mail.example.com.crt:/media/tls/mailserver.crt:ro
@@ -105,7 +107,6 @@ services:
   #   env_file: .env
   #   volumes:
   #     - data-virusdb:/var/lib/clamav
-
 volumes:
   data-db:
   data-dkim:
